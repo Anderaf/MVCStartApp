@@ -9,25 +9,23 @@ namespace MVCStartApp.Middleware
     public class LoggingMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IRequestRepository _repository;
 
         /// <summary>
         ///  Middleware-компонент должен иметь конструктор, принимающий RequestDelegate
         /// </summary>
-        public LoggingMiddleware(RequestDelegate next, IRequestRepository request)
+        public LoggingMiddleware(RequestDelegate next)
         {
             _next = next;
-            _repository = request;
         }
 
         /// <summary>
         ///  Необходимо реализовать метод Invoke  или InvokeAsync
         /// </summary>
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context, IRequestRepository repository)
         {
             string requestURL = $"[{DateTime.Now}]: New request to http://{context.Request.Host.Value + context.Request.Path}";
             Console.WriteLine(requestURL);
-            await _repository.AddRequest(requestURL);
+            await repository.AddRequest(requestURL);
 
             // Передача запроса далее по конвейеру
             await _next.Invoke(context);
